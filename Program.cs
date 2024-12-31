@@ -1,4 +1,6 @@
 using LearnAPI.AppDbContext;
+using LearnAPI.Repositories.IRepository;
+using LearnAPI.Repositories.Repository;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -12,6 +14,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 //Database Connection
 builder.Services.AddDbContext<BookNookDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultDb")));
+// Dependencies --
+builder.Services.AddSingleton<IStateRepository, StateRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
