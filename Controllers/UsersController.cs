@@ -1,10 +1,13 @@
 ﻿using LearnAPI.AppDbContext;
 using LearnAPI.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearnAPI.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
         private readonly BookNookDbContext _context;
@@ -13,7 +16,7 @@ namespace LearnAPI.Controllers
         {
             _context = context;
         }
-
+        [Authorize]
         [HttpGet]
         [Route("index")]
         public async Task<IActionResult> Index()

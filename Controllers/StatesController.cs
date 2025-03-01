@@ -1,7 +1,9 @@
 ﻿using LearnAPI.Model;
 using LearnAPI.Repositories.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 
 namespace LearnAPI.Controllers
 {
@@ -39,6 +41,24 @@ namespace LearnAPI.Controllers
                 return NotFound(new { Message = "No states found." }); // Return 404 if no data
 
             return Ok(states); // Return 200 with the list of states
+        }
+
+        [Authorize]
+        [HttpGet("books")]
+        public IActionResult GetBooks()
+        {
+            return Ok(new { Message = "Books retrieved successfully" });
+        }
+
+        [HttpGet("generateKey")]
+        public  string GenerateKey()
+        {
+            var key = new byte[32]; // 256-bit key
+            using (var generator = RandomNumberGenerator.Create())
+            {
+                generator.GetBytes(key);
+            }
+            return Convert.ToBase64String(key);
         }
     }
 }
