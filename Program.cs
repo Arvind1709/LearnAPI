@@ -5,10 +5,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+});
 
 // Add services to the container.
 builder.Services.AddDistributedMemoryCache(); // Required for session
@@ -125,6 +129,7 @@ builder.Services.AddSwaggerGen(c =>
 
 //Build application
 var app = builder.Build();
+app.UseCors("AllowAll"); // ? Enable CORS globally
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

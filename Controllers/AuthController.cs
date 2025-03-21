@@ -3,8 +3,8 @@ using LearnAPI.Model;
 using LearnAPI.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace LearnAPI.Controllers
 {
@@ -12,13 +12,13 @@ namespace LearnAPI.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        
+
         private readonly BookNookDbContext _context;
         public AuthController(BookNookDbContext context)
         {
             _context = context;
         }
-        
+
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] ClientsModel user)
@@ -39,14 +39,28 @@ namespace LearnAPI.Controllers
             }
 
             // ✅ Generate JWT token if password is valid
-            var token = JwtHelper.GenerateToken(user.Username);
-            return Ok(new { Token = token });
+            // var token = JwtHelper.GenerateToken(User.Username, User.Role);
+
+            // Dummy check - Replace with database validation
+            if (User.Role == "Admin")
+            {
+                var token = JwtHelper.GenerateToken(user.Username, "Admin");
+                return Ok(new { Token = token });
+            }
+            else if (User.Role == "User")
+            {
+                var token = JwtHelper.GenerateToken(user.Username, "User");
+                return Ok(new { Token = token });
+            }
+
+            return Unauthorized("Invalid user name or password");
+
+            //return Ok(new { Token = token });
         }
 
 
 
-
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpGet("protected")]
         public IActionResult Protected()
         {
@@ -56,7 +70,9 @@ namespace LearnAPI.Controllers
             {
                 return Unauthorized("Token is missing");
             }
-            return Ok(new { Message = "You have accessed a protected endpoint." });
+            var username = User.Identity?.Name; // Get username
+            var role = User.FindFirst(ClaimTypes.Role)?.Value; // Get role from JWT
+            return Ok(new { Message = $"You have accessed a protected endpoint. And User name is : {username} and role is :{role}" });
         }
     }
 }
