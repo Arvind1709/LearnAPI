@@ -1,4 +1,5 @@
 ﻿using LearnAPI.AppDbContext;
+using LearnAPI.AppStart;
 using LearnAPI.Model;
 using LearnAPI.Utilities;
 using Microsoft.AspNetCore.Authorization;
@@ -45,7 +46,7 @@ namespace LearnAPI.Controllers
             if (User.Role == "Admin")
             {
                 var token = JwtHelper.GenerateToken(user.Username, "Admin");
-                return Ok(new { Token = token });
+                return Ok(new { Token = token, UserId = User.Id });
             }
             else if (User.Role == "User")
             {
@@ -62,6 +63,7 @@ namespace LearnAPI.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet("protected")]
+        [ServiceFilter(typeof(ActionLoggingFilter))]
         public IActionResult Protected()
         {
             var token = Request.Headers["Authorization"].ToString();

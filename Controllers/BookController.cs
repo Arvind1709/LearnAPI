@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace LearnAPI.Controllers
 {
     [ApiController]
+    // [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     public class BookController : Controller
     {
@@ -58,15 +59,6 @@ namespace LearnAPI.Controllers
         {
             if (bookModel == null)
                 return BadRequest("Invalid book data.");
-
-            //var book = new BookModel
-            //{
-            //    Title = bookModel.Title,
-            //    Author = bookModel.Author,
-            //    Price = bookModel.Price
-            //    // Map other properties
-            //};
-
             try
             {
                 _context.Books.Add(bookModel);
